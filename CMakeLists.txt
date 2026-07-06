@@ -9,4 +9,8 @@ add_executable(fileexplorer
         headers/rm.h
         src/rm.c
         headers/pwd.h
-        src/pwd.c)
+        src/pwd.c
+        headers/mkdir.h
+        src/mkdir.c
+        headers/utils.h
+        src/utils.c)
