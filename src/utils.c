@@ -24,3 +24,7 @@ void print_sentized_text(const char *text, bool preserve_tabs ) {
         }
     }
 }
+char *skip_spaces(char *s) {
+    while (*s == ' ' || *s == '\t') s++;
+    return s;
+}

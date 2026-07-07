@@ -17,4 +17,6 @@ add_executable(fileexplorer
         headers/cd.h
         src/cd.c
         headers/cat.h
-        src/cat.c)
+        src/cat.c
+        headers/list.h
+        src/list.c)
