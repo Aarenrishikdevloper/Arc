@@ -1,0 +1,126 @@
+#include "../../headers/FS.h"
+#include "../../headers/preview.h"
+#include <stdio.h>
+#include <dirent.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+int count_file_lines(const char *path) {
+    FILE *fp = fopen(path, "r");
+    if (!fp) {
+        return 0;
+    }
+    int lines = 0;
+    char line[1024];
+    while (fgets(line, sizeof(line), fp)) lines++;
+    fclose(fp);
+    return lines;
+}
+int lists(struct  AppState *s) {
+    DIR *Wdir = opendir(s->fs.cwd);
+    if (!Wdir) {
+        perror("opendir");
+        return 0;
+    }
+    s->fs.len = 0;
+    struct dirent *ent;
+    while ((ent=readdir(Wdir)) != NULL) {
+        if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0) continue;
+        if (s->fs.len >= s->fs.capacity) {
+            s->fs.capacity *= 2;
+            FileEntry *tmp = realloc(s->fs.f_list, sizeof(FileEntry) * s->fs.capacity);
+            if (!tmp) {
+                perror("realloc");
+                closedir(Wdir);
+                return s->fs.len;
+            }
+            s->fs.f_list = tmp;
+        }
+        char fullpath[PATH_MAX];
+        if (snprintf(fullpath, sizeof(fullpath), "%s/%s", s->fs.cwd, ent->d_name) >= (int)sizeof(fullpath)) {
+            fprintf(stderr, "preview:path too long\n");
+            continue;
+        }
+        s->fs.f_list[s->fs.len].path = malloc(strlen(fullpath) + 1);
+        if (!s->fs.f_list[s->fs.len].path) {
+            perror("malloc");
+            closedir(Wdir);
+            return s->fs.len;
+        }
+        strcpy(s->fs.f_list[s->fs.len].path, fullpath);
+        s->fs.f_list[s->fs.len].type = get_file_type(fullpath);
+        s->fs.f_list[s->fs.len].score = 0;
+        s->fs.f_list[s->fs.len].marked = 0;
+        s->fs.len++;
+    }
+    closedir(Wdir);
+    return s->fs.len;
+}
+
+FileType get_file_type(const char *path) {
+    struct stat st;
+    if (stat(path, &st) == 0) {
+        if (S_ISDIR(st.st_mode)) {
+            return FT_DIR;
+        }
+        if (!S_ISREG(st.st_mode)) {
+            return FT_UNKNOWN;
+        }
+        FILE*fp = fopen(path, "rb");
+        if (!fp) {
+            return FT_UNKNOWN;
+        }
+        unsigned char buf[512];
+        size_t n = fread(buf, 1, sizeof(buf), fp);
+        fclose(fp);
+        for (size_t i = 0; i < n; i++) {
+            if (buf[i] == 0) {
+                return FT_BINARY;
+            }
+        }
+        const char *dot = strrchr(path, '.');
+        if (!dot || dot == path) {
+            return FT_TEXT;
+        }
+        dot++;
+        const char *ext = dot;
+        if (!strcmp(ext, "pdf")) {
+            return FT_BINARY;
+        }
+        if (!strcmp(ext, "png")) {
+            return FT_BINARY;
+        }
+        if (!strcmp(ext, "jpg")) {
+            return FT_BINARY;
+        }
+        if (!strcmp(ext, "jpeg")) {
+            return FT_BINARY;
+        }
+        if (!strcmp(ext, "zip")) {
+            return FT_BINARY;
+        }
+        if (!strcmp(ext, "tar")) {
+            return FT_BINARY;
+        }
+        if (!strcmp(ext, "gz")) {
+            return FT_BINARY;
+        }
+        if (!strcmp(ext, "mp4")) {
+            return FT_BINARY;
+        }
+        if (!strcmp(ext, "mp3")) {
+            return FT_BINARY;
+        }
+        return FT_TEXT;
+
+    }
+    return FT_UNKNOWN;
+}
+int fs_empty(struct AppState *s) {
+    return s->fs.len == 0;
+}
+
+int view_empty(struct AppState *s) {
+    return s->fs.view_len == 0;
+}
+

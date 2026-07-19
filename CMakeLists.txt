@@ -19,4 +19,10 @@ add_executable(fileexplorer
         headers/cat.h
         src/cat.c
         headers/list.h
-        src/list.c)
+        src/list.c
+        headers/Fs.h
+        headers/preview.h
+        src/Preview/FS.c
+        headers/UI.h
+        src/Preview/UI.c
+        src/Preview/preview.c)
