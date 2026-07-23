@@ -67,7 +67,8 @@ int main(void) {
   int hist_index = 0;
   int hist_len = 0;
   enable_raw();
-  while (1) {
+  int runing = 1;
+  while (runing) {
     char *line = read_command_line(history, &hist_index, &hist_len, working);
     if (line == NULL) {
       return 1;
@@ -161,7 +162,8 @@ int main(void) {
         printf("\033[?25h");
         fflush(stdout);
         free_history(history, hist_len);
-        return 0;
+        runing = 0;
+        break;
       case CMD_pwd: {
          const char *pwd_v;
          if ((pwd_v = print_workiing())!= NULL) {
