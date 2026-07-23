@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <limits.h>
+#include <string.h>
 
 #include "../headers/cat.h"
 #include "../headers/list.h"
@@ -15,6 +16,7 @@
 #include "../headers/touch.h"
 #include  "../headers/cd.h"
 #include "../headers/mkdir.h"
+#include "../headers/rm.h"
 #include "../help/help.h"
 
 static void restore_terminal(void) {
@@ -161,7 +163,7 @@ int main(void) {
         disable_raw();
         printf("\033[?25h");
         fflush(stdout);
-        free_history(history, hist_len);
+
         runing = 0;
         break;
       case CMD_pwd: {
@@ -259,6 +261,41 @@ int main(void) {
            working = return_last_dir(print_workiing());
         }
         break;
+      }
+      case CMD_rm: {
+        int start = 1;
+         int flags = parse_rm_flags(argc, argv , &start);
+         if (flags == -1) break;
+          int confirm =(flags & RM_I) !=0;
+          int recursive = (flags & RM_R) !=0;
+          int force = (flags & RM_R) != 0;
+          int interactive = (flags & RM_INTER) != 0;
+          int verbose = (flags & RM_V) != 0;
+        if (force) {
+            confirm = 0;
+            interactive = 0;
+        }
+        if (start >= argc) {
+          fprintf(stderr, "rm:missing operand\n");
+          break;
+        }
+        int taget = argc - start;
+        if (interactive || recursive || taget > 3) {
+           char prompt[512] = "remove";
+           for (int i =start; i <argc && (int)strlen(prompt)< (int)sizeof(prompt)- 4; i++) {
+             strncat(prompt, " ", sizeof(prompt) - strlen(prompt) -1);
+             strncat(prompt, argv[i], sizeof(prompt) - strlen(prompt) - 1);
+             if (!ask_rm_confirmation(prompt)) {
+               break;
+             }
+           }
+          for (int i = start; i < argc; i++) {
+            remove_item(argv[i], confirm, recursive , force, verbose);
+          }
+          break;
+        }
+
+
       }
         default:
             printf("command not found: %s\n", argv[0]);
