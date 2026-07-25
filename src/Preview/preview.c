@@ -272,7 +272,7 @@ static void rebuild_sort_view(struct AppState *s) {
 }
 static int reload_directory(struct AppState *s) {
     free_file_list(s);
-    if (list(s) < 0) return 1;
+    if (lists(s) < 0) return 1;
     rebuild_sort_view(s);
     s->fs.index = 0;
     s->fs.offset = 0;

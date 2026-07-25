@@ -1,0 +1,83 @@
+# ==========================
+# CLion
+# ==========================
+.idea/
+cmake-build-*/
+out/
+
+# ==========================
+# CMake
+# ==========================
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Testing/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# ==========================
+# Build Artifacts
+# ==========================
+*.o
+*.obj
+*.lo
+*.la
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+
+# Debug Symbols
+*.pdb
+*.dSYM/
+
+# ==========================
+# Ninja
+# ==========================
+.ninja_deps
+.ninja_log
+build.ninja
+
+# ==========================
+# Visual Studio (if opened)
+# ==========================
+.vs/
+*.vcxproj*
+*.sln
+
+# ==========================
+# Logs
+# ==========================
+*.log
+
+# ==========================
+# OS Files
+# ==========================
+.DS_Store
+Thumbs.db
+
+# ==========================
+# Vim
+# ==========================
+*.swp
+*.swo
+*~
+
+# ==========================
+# VS Code
+# ==========================
+.vscode/
+
+# ==========================
+# Temporary
+# ==========================
+tmp/
+temp/

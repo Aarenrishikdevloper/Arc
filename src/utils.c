@@ -53,6 +53,7 @@ void enable_raw(void) {
     struct  termios raw = orig;
     raw.c_lflag &= ~(ECHO |ICANON | IEXTEN );
     raw.c_iflag &= ~(IXON |ICRNL);
+    raw.c_oflag |= OPOST | ONLCR;
     raw.c_cc[VMIN] = 1;
     raw.c_cc[VTIME] = 0;
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == 0) {
@@ -72,20 +73,17 @@ const char *return_last_dir(const char *working) {
     return (last && *(last+1))?last+1:working;
 }
 void rredraw(const char *buf, const char * working_dir, int cursor) {
-    int len =(int) strlen(buf);
-    printf("\r\033[K%s> ", working_dir );
-    for (int i = 0; i < len; i++) {
-        if (i == cursor) {
-            printf("\033[7m%c\033[0m", buf[i]);
-        }else putchar(buf[i]);
-    }
-    if (cursor == len) {
-        printf("\033[7m \033[0m");
+    printf("\033[?25h");
+    printf("\r\033[K%s> %s", working_dir, buf);
+    int len = (int)strlen(buf);
+    int back = len -cursor;
+    if (back > 0) {
+        printf("\033[%dD", back);
     }
     fflush(stdout);
 }
  void delete_world(char*buf, int*curosr,int*len) {
-    if (curosr == 0)return;
+    if (*curosr == 0)return;
     int i = *curosr;
     while (i >0 && buf[i-1] == ' ') i--;
     while (i >0 && buf[i-1] == ' ') i--;
@@ -101,6 +99,7 @@ void *read_command_line(char **history, int *index,int *history_len, const char*
      static char buf[1024];
       int len =0;
      buf[0] = '\0';
+    putchar('\n');
     rredraw(buf, working_dir, cursor);
     while (1) {
         char c;
@@ -133,6 +132,7 @@ void *read_command_line(char **history, int *index,int *history_len, const char*
             }
             *index = *history_len;
             printf("\n");
+            fflush(stdout);
             return buf;
         }
         if ((c == 127 || c== 8) && cursor > 0) {

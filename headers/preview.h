@@ -78,7 +78,7 @@ typedef enum {
 } PreviewKey;
 void rebuild_view(struct AppState *s);
 void print_lineClipped(const char *s , int max_width);
-int list(struct AppState *s);
+int lists(struct AppState *s);
 void get_term_size(int *rows, int *cols);
 int fs_empty(struct AppState *s);
 void clear_preview_area(struct AppState *s);

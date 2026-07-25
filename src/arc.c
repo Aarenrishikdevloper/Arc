@@ -21,7 +21,7 @@
 
 static void restore_terminal(void) {
   disable_raw();
-  printf("\033[?25H\033[?10491");
+  printf("\033[?25H\033[?1049l");
   fflush(stdout);
 }
 static void handle_exit_signal(int signo) {
@@ -57,7 +57,6 @@ static int parse_octal_mode(const char *text, mode_t *out) {
 int main(void) {
   atexit(restore_terminal);
   install_signal_handlers();
-  printf("\033[?251");
   fflush(stdout);
   print_ascii_name();
   const char*working =return_last_dir(print_workiing());
@@ -69,8 +68,8 @@ int main(void) {
   int hist_index = 0;
   int hist_len = 0;
   enable_raw();
-  int runing = 1;
-  while (runing) {
+
+  while (1) {
     char *line = read_command_line(history, &hist_index, &hist_len, working);
     if (line == NULL) {
       return 1;
@@ -112,7 +111,7 @@ int main(void) {
           printf("\033[?1049l");
           break;
         }
-        st.fs.len = list(&st);
+        st.fs.len = lists(&st);
         enable_raw();
         input_monitor(&st);
         disable_raw();
@@ -160,12 +159,17 @@ int main(void) {
       }
       case CMD_exit:
         fprintf(stdout, "exit in progress...\n");
+        fflush(stdout);
         disable_raw();
         printf("\033[?25h");
+        printf("\033[?1049l");
+        printf("\033[2J\033[H");
+        clear_screen();
         fflush(stdout);
+        free_history(history, hist_len);
+        return 0;
 
-        runing = 0;
-        break;
+
       case CMD_pwd: {
          const char *pwd_v;
          if ((pwd_v = print_workiing())!= NULL) {
@@ -210,6 +214,9 @@ int main(void) {
           working = return_last_dir(print_workiing());
           break;
         }
+        cmd_cd(argv[start]);
+        working = return_last_dir(print_workiing());
+        break;
 
       }
         case CMD_cat: {
@@ -304,6 +311,6 @@ int main(void) {
     enable_raw();
 
   }
-  free_history(history, hist_len);
-  return 0;
+
+
 }
