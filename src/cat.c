@@ -25,8 +25,8 @@ int cat_file(const char * filename) {
 int parse_cat_flags(int argc, char **argv, int *start) {
     int flags = 0;
      int i = 1;
-     while (i<argc && argv[i][0] != '-' && argv[i][0] != '\0') {
-         for (int j=i; argv[i][j] != '\0'; j++) {
+     while (i < argc && argv[i][0] == '-') {
+         for (int j=1; argv[i][j] != '\0'; j++) {
              char  c = argv[i][j];
               if (c == 'h') flags |= CAT_HL;
               else {
