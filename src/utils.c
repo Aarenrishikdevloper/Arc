@@ -255,6 +255,6 @@ int get_command_id(const char *command) {
     return -1;
 }
 void clear_screen(void) {
-    printf("\033[2J\033[H");
+    printf("\033[2J\033[3J\033[H");
     fflush(stdout);
 }

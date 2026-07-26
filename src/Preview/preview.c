@@ -98,7 +98,7 @@ static int  deleted_marked_items(struct AppState *s) {
     if (!confirmed) return 0;
     int failed =0;
     for (int  i =0; i < s->fs.len; i++) {
-        if (s->fs.f_list[i].marked) continue;
+        if (!s->fs.f_list[i].marked) continue;
         if (remove_item(s->fs.f_list[i].path,0,1,0,0) != 0) {
             failed = 1;
         }
@@ -476,8 +476,8 @@ void input_monitor(struct AppState *s) {
         }
         if (c == 'm') {
              mark_all_items(s);
-             reload_directory(s);
              redraw(s);
+
         }
         if (c== 'u') {
             clear_all_marks(s);

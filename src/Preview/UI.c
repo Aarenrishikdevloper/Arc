@@ -55,8 +55,9 @@ static void draw_content_frame(struct AppState *s) {
     printf(UI_CLR_FRAME "\033[1;1H╭");
     draw_horizontal(1,2,right -1, "-");
     printf("\033[1;%dH╮", right);
-    for (int i =0; i < title_len; i++) putchar(title[i]);
     printf(UI_CLR_FRAME);
+    for (int i =0; i < title_len; i++) putchar(title[i]);
+     printf(UI_CLR_FRAME);
     for (int row = s->ui.top_row; row < s->ui.divider_row; row++) {
         printf("\033[%d;1H│\033[%d;%dH│\033[%d;%dH│", row, row, sep_col, row, right);
     }
