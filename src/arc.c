@@ -158,16 +158,15 @@ int main(void) {
         break;
       }
       case CMD_exit:
-        fprintf(stdout, "exit in progress...\n");
-        fflush(stdout);
         disable_raw();
-        printf("\033[?25h");
-        printf("\033[?1049l");
-        printf("\033[2J\033[H");
-        clear_screen();
+        printf("\033[?25h");                 // show cursor
+        printf("\033[2J\033[3J\033[H");      // clear screen + scrollback FIRST
+        printf("successfully exit\n");        // message on the clean screen, WITH trailing newline
         fflush(stdout);
         free_history(history, hist_len);
         return 0;
+
+
 
 
       case CMD_pwd: {
