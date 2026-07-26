@@ -223,8 +223,8 @@ void quicK_sort(void*base, int left, int right,size_t size, int(*cmp)(const void
         while (cmp(arr+j*size, pivot) > 0) j--;
         if (i <= j) {
             swap(arr+i*size, arr+j*size, size);
-            j++;
             i++;
+            j--;
         }
     }
     if (left < j) quicK_sort(base, left,j,size, cmp);
@@ -565,7 +565,8 @@ void  redraw(struct  AppState *s) {
     }
     for (int i =0; i < s->ui.rows; i++) {
         s->fs.real = s->fs.offset + i;
-        if (s->fs.real >= s->ui.rows) break;
+        if (s->fs.real >= s->fs.view_len) break;
+        if (s->fs.real >= s->fs.view_len) break;
         printf("\033[%d;2H", s->ui.top_row + i);
         if (s->fs.real == s->fs.index && s->fs.view[s->fs.real]->marked) {
             printf(CLR_CURSOR_MARKED " ");
